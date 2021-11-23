@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <title>Projeto Teste</title>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+    <script>
+        //objeto de configuração que recebe propriedades e métodos
+        new Vue({ 
+
+             // elemento que será o container do vue, ou seja, o elemento que será renderizado - funciona como o querySelector()
+            el: '#app',
+
+            //template que será renderizado no container
+            template: ` 
+                <div class="container">
+                    <h1>Comentários</h1>
+                    <hr>
+                    <div class="form-todo form-group">
+                        <p>
+                            <input type="text" placeholder="Nome" nome="author" class="form-control" v-model="name">
+                        </p>
+                        <p>
+                            <textarea placeholder="Comentário" nome="message" class="form-control" v-model="message"></textarea>
+                        </p>
+                        <button v-on:click="addComment" type="submit" class="btn btn-primary">Comentar</button>
+                    </div>
+                    <br>
+                    <div class="list-group">
+                        <div class="list-group-item" v-for="(comment, index) in allComments">
+                            <span class="comment__author">Autor: <strong>{{comment.name}}</strong></span>
+                            <p>{{comment.message}}</p>
+                            <div>
+                                <a href="#" title="Excluir" v-on:click.prevent="removeComment(index)">Excluir</a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            `, 
+
+            //objeto que contém os dados que serão usados no vue - funciona como o this.
+            data(){
+                return{
+                    comments: [],
+                    name: '',
+                    message: ''
+                }
+            },
+
+            //métodos que serão disponibilizados para o template através da diretiva 'v-'
+            methods: { 
+                addComment(){
+                    if(this.message.trim() === ""){
+                        return;
+                    }
+                    this.comments.push({ //push - adiciona um novo elemento ao array
+                        name: this.name,
+                        message: this.message
+                    });
+                
+                    this.name = "";
+                    this.message = "";
+                },
+                removeComment(index){
+                    this.comments.splice(index, 1); //splice - remove um elemento do array a partir do índice passado como parâmetro e exclui x elementos
+                }
+            },
+
+            //computed - customiza o que é mandado pra interface
+            computed: {
+                allComments(){
+                    return this.comments.map(comment => ({
+                        ...comment,
+                        name: comment.name.trim() === '' ? 'Anônimo' : comment.name
+                    }));
+                }
+            },
+
+            //watch - monitora alterações no objeto e dispara uma função, nesse caso monitora as mudanças do array usado
+            watch: {
+                comments(val) {
+                    console.log('val', val);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
